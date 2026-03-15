@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:secure_password_manager/features/auth/unlock_screen.dart';
 import 'package:secure_password_manager/providers/auth_provider.dart';
 
 class MasterPasswordScreen extends ConsumerWidget {
@@ -11,6 +12,15 @@ class MasterPasswordScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
+
+    ref.listen(authProvider, (previous, next) {
+      if (next.success) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const UnlockScreen()),
+        );
+      }
+    });
     return Scaffold(
       appBar: AppBar(title: Text("Create Master Password")),
       body: Column(
@@ -38,10 +48,7 @@ class MasterPasswordScreen extends ConsumerWidget {
               onPressed: () {
                 ref
                     .read(authProvider.notifier)
-                    .validPassword(
-                      passwordController.text,
-                      confirmController.text,
-                    );
+                    .createMasterPassword(passwordController.text);
               },
               child: Text("Create Vault"),
             ),
