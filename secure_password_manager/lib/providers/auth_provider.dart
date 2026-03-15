@@ -1,26 +1,35 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:secure_password_manager/providers/secure_storage_provider.dart';
 
 class AuthState {
   final String error;
-  AuthState({this.error = ""});
+  final bool success;
+  AuthState({this.error = "", this.success = false});
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(AuthState());
+  final Ref ref;
+  AuthNotifier(this.ref) : super(AuthState());
 
-  void validPassword(String password, String confirmPassword) {
-    if (password.isEmpty || confirmPassword.isEmpty) {
-      state = AuthState(error: "Password cannot be empty");
+  Future<void> createMasterPassword(String password) async {
+    final storage = ref.read(secureStorageProvider);
+
+    await storage.saveMasterPassword(password);
+
+    state = AuthState(success: true);
+  }
+
+  Future<void> unlockVault(String password) async {
+    final storage = ref.read(secureStorageProvider);
+    final savedPassword = await storage.getMasterPassword();
+    if (savedPassword == password) {
+      state = AuthState(success: true);
+    } else {
+      state = AuthState(error: "Incorrect Password");
     }
-
-    if (password != confirmPassword) {
-      state = AuthState(error: "Password do not match");
-    }
-
-    state = AuthState(error: "");
   }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier();
+  return AuthNotifier(ref);
 });

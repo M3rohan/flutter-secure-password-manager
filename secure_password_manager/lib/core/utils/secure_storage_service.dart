@@ -7,7 +7,7 @@ class SecureStorageService {
 
   static const masterPasswordKey = "master_password";
 
-  Future<void> setMasterPassword(String password) async {
+  Future<void> saveMasterPassword(String password) async {
     await _storage.write(key: masterPasswordKey, value: password);
   }
 
