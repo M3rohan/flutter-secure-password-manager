@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:secure_password_manager/models/password_entry.dart';
+import 'package:secure_password_manager/features/vault/add_password_screen.dart';
 import 'package:secure_password_manager/providers/vault_provider.dart';
 
 class VaultScreen extends ConsumerStatefulWidget {
@@ -32,18 +33,24 @@ class _VaultScreenState extends ConsumerState<VaultScreen> {
           return ListTile(
             title: Text(item.title),
             subtitle: Text(item.username),
-            trailing: const Icon(Icons.lock),
+            trailing: IconButton(
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: item.encryptedPassword));
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text("Password copied")));
+              },
+              icon: Icon(Icons.copy),
+            ),
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final entry = PasswordEntry()
-            ..title = "Demo"
-            ..username = "demo@gmail.com"
-            ..encryptedPassword = "123456";
-
-          ref.read(vaultProvider.notifier).addPassword(entry);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => AddPasswordScreen()),
+          );
         },
         child: const Icon(Icons.add),
       ),

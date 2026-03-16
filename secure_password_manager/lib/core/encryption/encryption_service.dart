@@ -1,7 +1,7 @@
 import 'package:encrypt/encrypt.dart';
 
 class EncryptionService {
-  final _key = Key.fromUtf8('12345678901234567890123456789012');
+  final _key = Key.fromUtf8('my32lengthsupersecretnooneknows1');
   final _iv = IV.fromLength(16);
 
   late final Encrypter _encrypter;
